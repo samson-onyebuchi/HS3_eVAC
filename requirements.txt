@@ -30,4 +30,4 @@ gunicorn
 pandas
 python-dateutil
 marshmallow
-dateutil
+python-dateutil
