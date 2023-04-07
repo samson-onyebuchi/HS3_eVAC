@@ -15,6 +15,5 @@ trial
 *.xlsx
 qr/*.jpg
 trial/*.xlsx
-requirements.txt
 mongo_url.py
 procfile
