@@ -149,5 +149,5 @@ def verify():
         return jsonify(message=f"An exception occurred: {e}", status=False)
     else:
         #return {"message": f"Encounter Code For {payload['enrollment_id']} is {code}", "status": True}
-        return {"message": f"Encounter Code For {payload['enrollment_id']} is created successfully", "status": True}
+        return {"message": f"Encounter Code For {payload['enrollment_id']} is created successfully","code":code, "status": True}
 
