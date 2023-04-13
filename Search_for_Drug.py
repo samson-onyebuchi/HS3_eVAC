@@ -16,23 +16,33 @@ try:
 except Exception as e:
     db = None
 
-class DrugList(Resource):
-    def get(self):
-        keyword = request.args.get("keyword")
+class Search(Resource):
+    def get(self, keyword):
+        try:
+            drugs = list()
+            services = list()
 
-        # If keyword is None, retrieve all drugs from the collection
-        if keyword is None:
-            drugs = db.drug.find({}, {"_id": 0, "name": 1})
+            # Search for drugs
+            drug_record = db.drug.find({"drugName": {"$regex": keyword, "$options": "i"}}, {"_id": 0, "drugName": 1, "price": 1})
+            for drug in drug_record:
+                drugs.append(drug)
+
+            # Search for services
+            service_record = db.service.find({"serviceName": {"$regex": keyword, "$options": "i"}}, {"_id": 0, "serviceName": 1, "price": 1})
+            for service in service_record:
+                services.append(service)
+
+            results = drugs + services
+
+            # If no results are found, append some default values
+            if not results:
+                results.append({
+                    "generic_name": "No results found",
+                    "price": "N/A"
+                })
+        except Exception as e:
+            return jsonify(message=f"An exception occurred: {e}", status=False)
         else:
-            # Otherwise, retrieve drugs that match the keyword
-            drugs = db.drug.find({"name": {"$regex": keyword, "$options": "$i"}}, {"_id": 0, "name": 1})
+            return jsonify(data=results, message=f"List of drugs and services similar to '{keyword}' retrieved successfully", status=True)
 
-        
-        drug_list = []
-        for drug in drugs:
-            drug_list.append(drug["name"])
-
-        
-        return jsonify({"drugs": drug_list})
-
-api.add_resource(DrugList, "/drugs")
+api.add_resource(Search, "/search/<string:keyword>")
