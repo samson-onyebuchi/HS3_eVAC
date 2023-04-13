@@ -16,3 +16,4 @@ CORS(app)
 #mongo = PyMongo(app, MONGO_URI)
 
 from app.apis import app
+from practice import app
