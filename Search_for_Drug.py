@@ -18,27 +18,21 @@ except Exception as e:
 
 class DrugList(Resource):
     def get(self):
-        try:
-            # Get the value of the name query parameter from the URL
-            name = request.args.get("name")
+        keyword = request.args.get("keyword")
 
-            # If name is None, retrieve all drugs from the collection
-            if name is None:
-                drugs = db.drug.find({}, {"_id": 0, "name": 1})
-            else:
-                # Otherwise, retrieve only drugs with a matching name
-                drugs = db.drug.find({"name": name}, {"_id": 0, "name": 1})
+        # If keyword is None, retrieve all drugs from the collection
+        if keyword is None:
+            drugs = db.drug.find({}, {"_id": 0, "name": 1})
+        else:
+            # Otherwise, retrieve drugs that match the keyword
+            drugs = db.drug.find({"name": {"$regex": keyword, "$options": "$i"}}, {"_id": 0, "name": 1})
 
-            # Convert the drugs to a list
-            drug_list = []
-            for drug in drugs:
-                drug_list.append(drug["name"])
+        
+        drug_list = []
+        for drug in drugs:
+            drug_list.append(drug["name"])
 
-            # Return the drug list as a Python list
-            return drug_list
-
-        except Exception as e:
-            error_msg = {"error": "An error occurred while retrieving data from the database."}
-            return jsonify(error_msg)
+        
+        return jsonify({"drugs": drug_list})
 
 api.add_resource(DrugList, "/drugs")
